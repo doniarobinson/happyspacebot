@@ -13,23 +13,23 @@ function tweetPhoto() {
   // APOD has images back to 1995, but higher quality images are more recent
   // generate random date between now and 2005
 
-  let todaysdate = new Date();
-  let earliestdate = new Date(2005, 0, 1);
+  var todaysdate = new Date();
+  var earliestdate = new Date(2005, 0, 1);
 
   const millisecondsinday = 24*60*60*1000;
 
-  let todayseconds = todaysdate.getTime();
-  let earliestseconds = earliestdate.getTime();
+  var todayseconds = todaysdate.getTime();
+  var earliestseconds = earliestdate.getTime();
  
-  let elapseddays = (todayseconds - earliestseconds)/millisecondsinday;
+  var elapseddays = (todayseconds - earliestseconds)/millisecondsinday;
 
   // now randomly pick a number between 1 and elapseddays
-  let randomday = Math.floor((Math.random() * elapseddays) + 1);
-  let randomseconds = earliestseconds + (randomday*millisecondsinday);
-  let randomdate = new Date(randomseconds);
+  var randomday = Math.floor((Math.random() * elapseddays) + 1);
+  var randomseconds = earliestseconds + (randomday*millisecondsinday);
+  var randomdate = new Date(randomseconds);
 
-  let datestringarray = randomdate.toISOString().split('T');
-  let shortrandomdate = datestringarray[0];
+  var datestringarray = randomdate.toISOString().split('T');
+  var shortrandomdate = datestringarray[0];
 
   var imgurl = "https://api.nasa.gov/planetary/apod?api_key=" + config.nasa_api_key + "&date=" + shortrandomdate;
 
@@ -37,7 +37,7 @@ function tweetPhoto() {
     .get(imgurl)
     .end(function(ajaxerror0, ajaxresult0) {
       if (ajaxresult0) {
-        let imagelocation = ajaxresult0.body.url;
+        var imagelocation = ajaxresult0.body.url;
 
 
         // Download to a directory and save with the original filename 
@@ -55,7 +55,7 @@ function tweetPhoto() {
               file_path: filePath
             }, function(err, data, response) {
 
-              let copyrighttext = "";
+              var copyrighttext = "";
               if (ajaxresult0.body.copyright !== "") {
                 copyrighttext = ajaxresult0.body.copyright;
               } else {
@@ -68,11 +68,11 @@ function tweetPhoto() {
                 .get(quoteurl)
                 .end(function(ajaxerror, ajaxresult) {
                   if (ajaxresult) {
-                    let tweettext = ajaxresult.body.quoteText + " -" + ajaxresult.body.quoteAuthor + "\nImage Credits: " + copyrighttext;
+                    var tweettext = ajaxresult.body.quoteText + " -" + ajaxresult.body.quoteAuthor + "\nImage Credits: " + copyrighttext;
                     //check to see if full tweet text is going to be over 140 characters
 
-                    let idstring = data.media_id_string;
-                    let params = {
+                    var idstring = data.media_id_string;
+                    var params = {
                       status: tweettext,
                       media_ids: [idstring]
                     };
