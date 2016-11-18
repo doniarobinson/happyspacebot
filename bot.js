@@ -1,6 +1,5 @@
 var request = require('superagent');
 var Twit = require('twit');
-//var image_downloader = require('image-downloader');
 var cloudinary = require('cloudinary');
 
 var config = require('./config.js');
@@ -32,16 +31,17 @@ function tweetPhoto() {
   var shortrandomdate = datestringarray[0];
 
   var imgurl = "https://api.nasa.gov/planetary/apod?api_key=" + config.nasa_api_key + "&date=" + shortrandomdate;
-  console.log(imgurl);
+  //console.log(imgurl);
 
   request
     .get(imgurl)
     .end(function(ajaxerror0, ajaxresult0) {
       if (ajaxresult0) {
         var imagelocation = ajaxresult0.body.url;
-          
-          cloudinary.uploader.upload(imagelocation,
-          function(result) { console.log(imagelocation) });
+     console.log(imagelocation);     
+          cloudinary.uploader.upload(imagelocation, function(result) { 
+            console.log(imagelocation); 
+          });
 
             var filePath = filename;
             T.postMediaChunked({
