@@ -4,6 +4,7 @@
   "description": "A bot that tweets an image from NASA and a random inspirational quote",
   "main": "bot.js",
   "scripts": {
+    "start" : "node bot.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Donia Robinson <donia@goldstarwebs.com>",
