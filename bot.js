@@ -67,13 +67,13 @@ function tweetPhoto() {
                 .get(quoteurl)
                 .end(function(ajaxerror, ajaxresult) {
                   if (ajaxresult) {
-                    var tweettext = ajaxresult.body.quoteText + " -" + ajaxresult.body.quoteAuthor + "\nImage Credits: " + copyrighttext;
+                    var tweettext = ajaxresult.body.quoteText + " -" + ajaxresult.body.quoteAuthor;// + "\nImage Credits: " + copyrighttext;
                     //check to see if full tweet text is going to be over 140 characters
 
-                    var idstring = data.media_id_string;
+                    //var idstring = data.media_id_string;
                     var params = {
                       status: tweettext,
-                      media_ids: [idstring]
+                      //media_ids: [idstring]
                     };
 
                     T.post('statuses/update', params, function(twittererror, tweet, twitterresponse) {
