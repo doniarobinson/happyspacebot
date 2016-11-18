@@ -1,6 +1,5 @@
 var request = require('superagent');
 var Twit = require('twit');
-var emoji = require('node-emoji');
 var image_downloader = require('image-downloader');
 
 var config = require('./config.js');
