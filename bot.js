@@ -32,7 +32,7 @@ function tweetPhoto() {
 
   var imgurl = "https://api.nasa.gov/planetary/apod?api_key=" + config.nasa_api_key + "&date=" + shortrandomdate;
 
-  request
+  /*request
     .get(imgurl)
     .end(function(ajaxerror0, ajaxresult0) {
       if (ajaxresult0) {
@@ -59,7 +59,7 @@ function tweetPhoto() {
                 copyrighttext = ajaxresult0.body.copyright;
               } else {
                 copyrighttext = "Public Domain";
-              }
+              }*/
 
               var quoteurl = "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en"
 
@@ -88,14 +88,14 @@ function tweetPhoto() {
                     console.log("There was an Ajax quote error.");
                   }
                 });
-            })
+        /*    })
           }
         };
         image_downloader(options);
       } else {
         console.log("There was an Ajax photo error.");
       }
-    });
+    });*/
 }
 
 tweetPhoto();
