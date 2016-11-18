@@ -1,6 +1,7 @@
 var request = require('superagent');
 var Twit = require('twit');
-var image_downloader = require('image-downloader');
+//var image_downloader = require('image-downloader');
+var cloudinary = require('cloudinary');
 
 var config = require('./config.js');
 
@@ -31,23 +32,16 @@ function tweetPhoto() {
   var shortrandomdate = datestringarray[0];
 
   var imgurl = "https://api.nasa.gov/planetary/apod?api_key=" + config.nasa_api_key + "&date=" + shortrandomdate;
+  console.log(imgurl);
 
-  /*request
+  request
     .get(imgurl)
     .end(function(ajaxerror0, ajaxresult0) {
       if (ajaxresult0) {
         var imagelocation = ajaxresult0.body.url;
-
-
-        // Download to a directory and save with the original filename 
-        var options = {
-          url: imagelocation,
-          dest: 'downloads',
-          done: function(err, filename, image) {
-            if (err) {
-              throw err;
-            }
-            // console.log('File saved to', filename);
+          
+          cloudinary.uploader.upload(imagelocation,
+          function(result) { console.log(imagelocation) });
 
             var filePath = filename;
             T.postMediaChunked({
@@ -59,7 +53,7 @@ function tweetPhoto() {
                 copyrighttext = ajaxresult0.body.copyright;
               } else {
                 copyrighttext = "Public Domain";
-              }*/
+              }
 
               var quoteurl = "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en"
 
@@ -88,14 +82,23 @@ function tweetPhoto() {
                     console.log("There was an Ajax quote error.");
                   }
                 });
-        /*    })
+            })
           }
         };
-        image_downloader(options);
+
       } else {
         console.log("There was an Ajax photo error.");
       }
-    });*/
+    });
 }
 
 tweetPhoto();
+
+/*setInterval(function() {
+  try {
+    tweetPhoto();
+  }
+  catch (e) {
+    console.log(e);
+  }
+}, 60000*60);*/

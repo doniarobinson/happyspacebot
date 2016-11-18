@@ -21,6 +21,7 @@
   "dependencies": {
     "image-downloader": "^2.0.0",
     "superagent": "^2.3.0",
-    "twit": "^2.2.5"
+    "twit": "^2.2.5",
+    "cloudinary": ""
   }
 }
