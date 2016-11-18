@@ -9,8 +9,29 @@ var T = new Twit(config);
 
 function tweetPhoto() {
 
-  var imgurl = "https://api.nasa.gov/planetary/apod?api_key=" + config.nasa_api_key;
-  // date  YYYY-MM-DD  today The date of the APOD image to retrieve
+  // date  YYYY-MM-DD  The date of the APOD image to retrieve; defaults to today
+  // APOD has images back to 1995, but higher quality images are more recent
+  // generate random date between now and 2005
+
+  let todaysdate = new Date();
+  let earliestdate = new Date(2005, 0, 1);
+
+  const millisecondsinday = 24*60*60*1000;
+
+  let todayseconds = todaysdate.getTime();
+  let earliestseconds = earliestdate.getTime();
+ 
+  let elapseddays = (todayseconds - earliestseconds)/millisecondsinday;
+
+  // now randomly pick a number between 1 and elapseddays
+  let randomday = Math.floor((Math.random() * elapseddays) + 1);
+  let randomseconds = earliestseconds + (randomday*millisecondsinday);
+  let randomdate = new Date(randomseconds);
+
+  let datestringarray = randomdate.toISOString().split('T');
+  let shortrandomdate = datestringarray[0];
+
+  var imgurl = "https://api.nasa.gov/planetary/apod?api_key=" + config.nasa_api_key + "&date=" + shortrandomdate;
 
   request
     .get(imgurl)
@@ -48,6 +69,7 @@ function tweetPhoto() {
                 .end(function(ajaxerror, ajaxresult) {
                   if (ajaxresult) {
                     let tweettext = ajaxresult.body.quoteText + " -" + ajaxresult.body.quoteAuthor + "\nImage Credits: " + copyrighttext;
+                    //check to see if full tweet text is going to be over 140 characters
 
                     let idstring = data.media_id_string;
                     let params = {
