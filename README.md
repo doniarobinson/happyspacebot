@@ -13,8 +13,10 @@ TODO: Write usage instructions
 ## Credits
 
 Projects that provided inspiration for happyspacebot:
- http://www.zachwhalen.net/posts/how-to-make-a-twitter-bot-with-google-spreadsheets-version-04/
- https://github.com/dariusk/examplebot
+
+http://www.zachwhalen.net/posts/how-to-make-a-twitter-bot-with-google-spreadsheets-version-04/
+
+https://github.com/dariusk/examplebot
 
 ## License
 
