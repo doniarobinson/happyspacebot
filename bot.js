@@ -83,8 +83,6 @@ function tweetPhoto() {
                   }
                 });
             })
-          }
-        };
 
       } else {
         console.log("There was an Ajax photo error.");
