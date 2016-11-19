@@ -1,4 +1,5 @@
-tmp/
+tmp/*
+!tmp/.gitkeep 
 node_modules/
 config-private.js
 npm-debug.log
