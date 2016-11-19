@@ -14,6 +14,5 @@ module.exports = {
   consumer_secret:      process.env.consumer_secret,
   access_token:          process.env.access_token,
   access_token_secret:  process.env.access_token_secret,
-  CLOUDINARY_URL:       process.env.CLOUDINARY_URL,
   nasa_api_key:          process.env.nasa_api_key
 }
