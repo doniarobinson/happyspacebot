@@ -97,13 +97,14 @@ function tweetPhoto() {
     });
 }
 
-tweetPhoto();
+//tweetPhoto();
 
-/*setInterval(function() {
+// post every 8 hours
+setInterval(function() {
   try {
     tweetPhoto();
   }
   catch (e) {
     console.log(e);
   }
-}, 60000*60);*/
+}, 8*60*60*1000);
