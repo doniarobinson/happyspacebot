@@ -1,4 +1,5 @@
-var config = require('./config-private.js');
+var configfile = (process.env.consumer_key === undefined) ? './config-private.js' : './config.js';
+var config = require(configfile);
 
 var image_downloader = require('image-downloader');
 var request = require('superagent');
@@ -56,12 +57,6 @@ function tweetPhoto() {
       if (ajaxresult0) {
         var copyrighttext = (ajaxresult0.body.copyright !== undefined) ? ajaxresult0.body.copyright : "Public Domain";
 
-/*        if (ajaxresult0.body.copyright !== undefined) {
-          copyrighttext = ajaxresult0.body.copyright;
-        } else {
-          copyrighttext = "Public Domain";
-        }
-*/
         // Download to a directory and save with the original filename 
         var options = {
           url: ajaxresult0.body.url,
@@ -102,14 +97,14 @@ console.log(tweettext);
                       media_ids: [idstring]
                     };
 
-                    /*T.post('statuses/update', params, function(twittererror, tweet, twitterresponse) {
+                    T.post('statuses/update', params, function(twittererror, tweet, twitterresponse) {
                       if (twitterresponse) {
                         console.log('Tweet was posted');
                       }
                       if (twittererror) {
                         console.log('Twitter returned this error: ', twittererror);
                       }
-                    });*/
+                    });
                   } else {
                     console.log("There was an Ajax quote error.");
                   }
