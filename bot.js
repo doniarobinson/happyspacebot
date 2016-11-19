@@ -1,3 +1,4 @@
+// on Heroku, use environment variables; if on localhost, use config-private file that does not get deployed
 var configfile = (process.env.consumer_key === undefined) ? './config-private.js' : './config.js';
 var config = require(configfile);
 
@@ -119,14 +120,14 @@ console.log(tweettext);
     });
 }
 
-tweetPhoto();
+//tweetPhoto();
 
 // post every 8 hours
-/*setInterval(function() {
+setInterval(function() {
   try {
     tweetPhoto();
   }
   catch (e) {
     console.log(e);
   }
-}, 8*60*60*1000);*/
+}, 8*60*60*1000);
