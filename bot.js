@@ -1,9 +1,8 @@
 var request = require('superagent');
 var Twit = require('twit');
 var image_downloader = require('image-downloader');
-//var cloudinary = require('cloudinary');
 
-var config = require('./config-private.js');
+var config = require('./config.js');
 
 var T = new Twit(config);
 
@@ -38,7 +37,13 @@ function tweetPhoto() {
     .end(function(ajaxerror0, ajaxresult0) {
       if (ajaxresult0) {
         var imagelocation = ajaxresult0.body.url;
+        var copyrighttext = "";
 
+        if (ajaxresult0.body.copyright !== "") {
+          copyrighttext = ajaxresult0.body.copyright;
+        } else {
+          copyrighttext = "Public Domain";
+        }
 
         // Download to a directory and save with the original filename 
         var options = {
@@ -55,13 +60,6 @@ function tweetPhoto() {
               file_path: filePath
             }, function(err, data, response) {
 
-              var copyrighttext = "";
-              if (ajaxresult0.body.copyright !== "") {
-                copyrighttext = ajaxresult0.body.copyright;
-              } else {
-                copyrighttext = "Public Domain";
-              }
-
               var quoteurl = "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en"
 
               request
@@ -77,14 +75,14 @@ function tweetPhoto() {
                       media_ids: [idstring]
                     };
 
-                    /*T.post('statuses/update', params, function(twittererror, tweet, twitterresponse) {
+                    T.post('statuses/update', params, function(twittererror, tweet, twitterresponse) {
                       if (twitterresponse) {
                         console.log('Tweet was posted');
                       }
                       if (twittererror) {
                         console.log('Twitter returned this error: ', twittererror);
                       }
-                    });*/
+                    });
                   } else {
                     console.log("There was an Ajax quote error.");
                   }
