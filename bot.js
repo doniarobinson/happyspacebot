@@ -39,7 +39,7 @@ function tweetPhoto() {
         var imagelocation = ajaxresult0.body.url;
         var copyrighttext = "";
 
-        if (ajaxresult0.body.copyright !== "") {
+        if (ajaxresult0.body.copyright !== undefined) {
           copyrighttext = ajaxresult0.body.copyright;
         } else {
           copyrighttext = "Public Domain";
