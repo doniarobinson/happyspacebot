@@ -1,8 +1,9 @@
 var request = require('superagent');
 var Twit = require('twit');
-var cloudinary = require('cloudinary');
+var image_downloader = require('image-downloader');
+//var cloudinary = require('cloudinary');
 
-var config = require('./config.js');
+var config = require('./config-private.js');
 
 var T = new Twit(config);
 
@@ -31,17 +32,23 @@ function tweetPhoto() {
   var shortrandomdate = datestringarray[0];
 
   var imgurl = "https://api.nasa.gov/planetary/apod?api_key=" + config.nasa_api_key + "&date=" + shortrandomdate;
-  //console.log(imgurl);
 
   request
     .get(imgurl)
     .end(function(ajaxerror0, ajaxresult0) {
       if (ajaxresult0) {
         var imagelocation = ajaxresult0.body.url;
-     console.log(imagelocation);     
-          cloudinary.uploader.upload(imagelocation, function(result) { 
-            console.log(imagelocation); 
-          });
+
+
+        // Download to a directory and save with the original filename 
+        var options = {
+          url: imagelocation,
+          dest: 'tmp',
+          done: function(err, filename, image) {
+            if (err) {
+              throw err;
+            }
+             console.log('File saved to', filename);
 
             var filePath = filename;
             T.postMediaChunked({
@@ -61,29 +68,31 @@ function tweetPhoto() {
                 .get(quoteurl)
                 .end(function(ajaxerror, ajaxresult) {
                   if (ajaxresult) {
-                    var tweettext = ajaxresult.body.quoteText + " -" + ajaxresult.body.quoteAuthor;// + "\nImage Credits: " + copyrighttext;
+                    var tweettext = ajaxresult.body.quoteText + " -" + ajaxresult.body.quoteAuthor + "\nImage Credits: " + copyrighttext;
                     //check to see if full tweet text is going to be over 140 characters
 
-                    //var idstring = data.media_id_string;
+                    var idstring = data.media_id_string;
                     var params = {
                       status: tweettext,
-                      //media_ids: [idstring]
+                      media_ids: [idstring]
                     };
 
-                    T.post('statuses/update', params, function(twittererror, tweet, twitterresponse) {
+                    /*T.post('statuses/update', params, function(twittererror, tweet, twitterresponse) {
                       if (twitterresponse) {
                         console.log('Tweet was posted');
                       }
                       if (twittererror) {
                         console.log('Twitter returned this error: ', twittererror);
                       }
-                    });
+                    });*/
                   } else {
                     console.log("There was an Ajax quote error.");
                   }
                 });
             })
-
+          }
+        };
+        image_downloader(options);
       } else {
         console.log("There was an Ajax photo error.");
       }
