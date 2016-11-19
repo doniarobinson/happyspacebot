@@ -48,7 +48,7 @@ function tweetPhoto() {
         // Download to a directory and save with the original filename 
         var options = {
           url: imagelocation,
-          dest: 'app/tmp',
+          dest: 'tmp',
           done: function(err, filename, image) {
             if (err) {
               throw err;
