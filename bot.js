@@ -8,40 +8,46 @@ var Twit = require('twit');
 
 var T = new Twit(config);
 
-/**
-* Calculates a random date between today and the date passed in
-* @method getRandomDateString
-* @param {number} year
-* @param {number} month
-* @param {number} day
-* @param {requestCallback} callback - The callback that handles the response.
-* @return {String} some bool
-*/
+var copyrighttext = "";
 
+
+/**
+ * Calculates a random date between today and the date passed in
+ * @method getRandomDateString
+ * @param {number} year
+ * @param {number} month
+ * @param {number} day
+ * @return {String} portion of the date that contains YYYY-MM-DD
+ */
 function getRandomDateString(year, month, day) {
   var todaysdate = new Date();
   var earliestdate = new Date(year, month, day);
 
-  const millisecondsinday = 24*60*60*1000;
+  const millisecondsinday = 24 * 60 * 60 * 1000;
 
   var todayseconds = todaysdate.getTime();
   var earliestseconds = earliestdate.getTime();
- 
-  var elapseddays = (todayseconds - earliestseconds)/millisecondsinday;
+
+  var elapseddays = (todayseconds - earliestseconds) / millisecondsinday;
 
   // now randomly pick a number between 1 and elapseddays
   var randomnum = Math.floor((Math.random() * elapseddays) + 1);
-  var randomseconds = earliestseconds + (randomnum*millisecondsinday);
+  var randomseconds = earliestseconds + (randomnum * millisecondsinday);
   var randomdate = new Date(randomseconds);
 
   var datestringarray = randomdate.toISOString().split('T');
-  
-  return datestringarray[0];
 
+  return datestringarray[0];
 }
 
 
-var getPhotoFromNasa = function() {
+/**
+ * what it does
+ * @method getPhotoInfoFromNasa
+ * @param {} 
+ * @return {} 
+ */
+var getPhotoInfoFromNasa = function() {
   return new Promise(function(resolve, reject) {
     // date  YYYY-MM-DD  The date of the APOD image to retrieve; defaults to today
     // APOD has images back to 1995, but higher quality images are more recent
@@ -49,97 +55,128 @@ var getPhotoFromNasa = function() {
 
     // month is 0 indexed
     var shortrandomdate = getRandomDateString(2005, 0, 1);
-    var imgurl = "http://api.nasa.gov/planetary/apod?api_key=" + config.nasa_api_key + "&date=" + shortrandomdate;
+    var imgurl = "https://api.nasa.gov/planetary/apod?api_key=" + config.nasa_api_key + "&date=" + shortrandomdate;
 
     request
       .get(imgurl)
       .end(function(nasaerror, nasaresult) {
-        // if http request to NASA passes
-        if (nasaresult) {
-console.log(nasaresult);
-          // Set options for image_downloader
-          var options = {
-            url: nasaresult.body.url,
-            dest: 'tmp'
-          };
+        // if result of http request to NASA returns no error
+        if (nasaresult.error === false) {
+          if (nasaresult.body.copyright !== undefined) {
+            copyrighttext = nasaresult.body.copyright;
+          } else {
+            copyrighttext = "Public Domain";
+          }
 
-          image_downloader(options);
-        } 
-        else {
-          reject(nasaerror);
+          resolve(nasaresult.body);
+        } else {
+          reject(nasaresult.error);
         }
-
-        resolve(nasaresult.body);
       });
   })
 }
 
-function tweetPhoto() {
 
-  getPhotoFromNasa().then(function(photoinfo) {
-    console.log(photoinfo);
-  }).catch(function(error) {
-//    console.log('Error-- ', error.message);
+/**
+ * what it does
+ * @method downloadPhoto
+ * @param {} 
+ * @return {} 
+ */
+var downloadPhoto = function(photoinfo) {
+  return new Promise(function(resolve, reject) {
+
+    // Set options for image_downloader
+    var options = {
+      url: photoinfo.url,
+      dest: 'tmp',
+      done: function(err, filename, image) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(filename);
+        }
+      }
+    };
+
+    image_downloader(options);
   });
-
-
-
-/*            var filePath = ajaxphoto.url;
-            T.postMediaChunked({
-              file_path: filePath
-            }, function(err, data, response) {
-
-              var quoteurl = "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en"
-
-              request
-                .get(quoteurl)
-                .end(function(ajaxerror, ajaxresult) {
-                  if (ajaxresult) {
-                    var copyrighttext = (ajaxphoto.copyright !== undefined) ? ajaxphoto.copyright : "Public Domain";
-
-                    var tweettext = ajaxresult.body.quoteText + " -" + ajaxphoto.quoteAuthor + "\nImage Credits: " + copyrighttext;
-                    //check to see if full tweet text is going to be over 140 characters
-
-console.log(tweettext.length);
-
-if (tweettext.length > 140) {
-
 }
 
-console.log(tweettext);
 
+/**
+ * what it does
+ * @method tweetMessage
+ * @param {} 
+ * @return {} 
+ */
+function tweetMessage(filename) {
 
+    T.postMediaChunked({
+      file_path: filename
+    }, function(err, data, response) {
 
-                    var idstring = data.media_id_string;
-                    var params = {
-                      status: tweettext,
-                      media_ids: [idstring]
-                    };
+      var quoteurl = "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
 
-                    T.post('statuses/update', params, function(twittererror, tweet, twitterresponse) {
-                      if (twitterresponse) {
-                        console.log('Tweet was posted');
-                      }
-                      if (twittererror) {
-                        console.log('Twitter returned this error: ', twittererror);
-                      }
-                    });
-                  } else {
-                    console.log("There was an Ajax quote error.");
-                  }
-                });
-            })*/
+      request
+        .get(quoteurl)
+        .end(function(ajaxerror, ajaxresult) {
 
+          if (ajaxresult.error === false) {
+            var tweettext = ajaxresult.body.quoteText + " -" + ajaxresult.body.quoteAuthor + "\nImage Credits: " + copyrighttext;
+
+            var idstring = data.media_id_string;
+            var params = {
+              status: tweettext,
+              media_ids: [idstring]
+            };
+
+            T.post('statuses/update', params, function(twittererror, tweet, twitterresponse) {
+              if (twitterresponse) {
+                console.log('Tweet was posted');
+              }
+              if (twittererror) {
+                console.log('Twitter returned this error: ', twittererror);
+              }
+            });
+//            resolve(ajaxresult);
+          } /*else {
+            reject(ajaxresult.error);
+          }*/
+        });
+    });
 }
 
-tweetPhoto();
+
+/**
+ * what it does
+ * @method bot
+ * @param {} 
+ * @return {} 
+ */
+function bot() {
+
+  getPhotoInfoFromNasa().then(function(photoinfo) {
+    downloadPhoto(photoinfo).then(function(filename) {
+      tweetMessage(filename);
+    }).catch(function(error) {
+      console.log('downloadPhoto() error: ', error.message);
+    });
+  }).catch(function(error) {
+    console.log('getPhotoFromNasa() error: ', error.message);
+  });
+}
+
+
+// post immediately
+//bot();
 
 // post every 8 hours
-/*setInterval(function() {
+setInterval(function() {
   try {
-    tweetPhoto();
+    bot();
   }
   catch (e) {
     console.log(e);
   }
-}, 8*60*60*1000);*/
+}, 8*60*60*1000);
