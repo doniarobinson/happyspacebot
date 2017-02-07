@@ -42,10 +42,8 @@ function getRandomDateString(year, month, day) {
 
 
 /**
- * what it does
+ * Generates a random date, within the known dates of the available photos on NASA's API, and requests the photo from that data
  * @method getPhotoInfoFromNasa
- * @param {} 
- * @return {} 
  */
 var getPhotoInfoFromNasa = function() {
   return new Promise(function(resolve, reject) {
@@ -78,10 +76,9 @@ var getPhotoInfoFromNasa = function() {
 
 
 /**
- * what it does
+ * Downloads the photo to the server
  * @method downloadPhoto
- * @param {} 
- * @return {} 
+ * @param {} photoinfo
  */
 var downloadPhoto = function(photoinfo) {
   return new Promise(function(resolve, reject) {
@@ -105,10 +102,9 @@ var downloadPhoto = function(photoinfo) {
 
 
 /**
- * what it does
+ * Requests a quote from the Forismatic quotes API, then attempts to tweet it and the photo
  * @method tweetMessage
- * @param {} 
- * @return {} 
+ * @param {string} filename 
  */
 function tweetMessage(filename) {
 
@@ -131,6 +127,7 @@ function tweetMessage(filename) {
               media_ids: [idstring]
             };
 
+// TODO: if the string is longer than 140 characters, put the text directly onto the image using Cloudinary
             T.post('statuses/update', params, function(twittererror, tweet, twitterresponse) {
               if (twitterresponse) {
                 console.log('Tweet was posted');
@@ -149,10 +146,8 @@ function tweetMessage(filename) {
 
 
 /**
- * what it does
+ * Main function to try getting a photo URL from NASA, try downloading that photo, and try tweeting a message
  * @method bot
- * @param {} 
- * @return {} 
  */
 function bot() {
 
