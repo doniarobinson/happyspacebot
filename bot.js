@@ -10,6 +10,14 @@ var T = new Twit(config);
 
 var copyrighttext = "";
 
+var cloudinary = require('cloudinary');
+
+cloudinary.config({
+        cloud_name: config.cloud_name,
+        api_key: config.api_key,
+        api_secret: config.api_secret
+});
+
 
 /**
  * Calculates a random date between today and the date passed in
@@ -101,64 +109,95 @@ var downloadPhoto = function(photoinfo) {
 }
 
 
-/**
- * Requests a quote from the Forismatic quotes API, then attempts to tweet it and the photo
- * @method tweetMessage
- * @param {string} filename 
- */
-function tweetMessage(filename) {
+var getQuote = function(quoteinfo) {
+  return new Promise(function(resolve, reject) {
+
+  var quoteurl = "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
+
+    request
+    .get(quoteurl)
+    .end(function(quoteerror, quoteresult) {
+      if (quoteresult) {
+        resolve(quoteresult.body);
+      } else {
+        reject(quoteresult.error);
+      }
+    });
+  });
+}
+
+
+function tweetMessage(filename,tweettext) {
 
     T.postMediaChunked({
       file_path: filename
     }, function(err, data, response) {
 
-      var quoteurl = "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
+        var idstring = data.media_id_string;
+        var params = {
+          status: tweettext,
+          media_ids: [idstring]
+        };
 
-      request
-        .get(quoteurl)
-        .end(function(ajaxerror, ajaxresult) {
-
-          if (ajaxresult.error === false) {
-            var tweettext = ajaxresult.body.quoteText + " -" + ajaxresult.body.quoteAuthor + "\nImage Credits: " + copyrighttext;
-
-            var idstring = data.media_id_string;
-            var params = {
-              status: tweettext,
-              media_ids: [idstring]
-            };
-
-// TODO: if the string is longer than 140 characters, put the text directly onto the image using Cloudinary
-            T.post('statuses/update', params, function(twittererror, tweet, twitterresponse) {
-              if (twitterresponse) {
-                console.log('Tweet was posted');
-              }
-              if (twittererror) {
-                console.log('Twitter returned this error: ', twittererror);
-              }
-            });
-//            resolve(ajaxresult);
-          } /*else {
-            reject(ajaxresult.error);
-          }*/
+        T.post('statuses/update', params, function(twittererror, tweet, twitterresponse) {
+          if (twitterresponse) {
+            if (twittererror) {
+              console.log('Twitter returned this error: ', twittererror);
+            }
+            else {
+              console.log('Tweet was posted');
+            }
+          }
         });
     });
 }
 
 
 /**
- * Main function to try getting a photo URL from NASA, try downloading that photo, and try tweeting a message
+ * Main function to try getting a quote, getting a photo URL from NASA, downloading that photo, and tweeting a message, gracefully handling errors when possible
  * @method bot
  */
 function bot() {
 
-  getPhotoInfoFromNasa().then(function(photoinfo) {
-    downloadPhoto(photoinfo).then(function(filename) {
-      tweetMessage(filename);
-    }).catch(function(error) {
-      console.log('downloadPhoto() error: ', error.message);
+  // try getting a quote
+  return getQuote().then(function(quoteinfo) {
+
+    //try getting a photo URL
+    return getPhotoInfoFromNasa().then(function(photoinfo) {
+
+      var quoteandattrib = quoteinfo.quoteText + " -" + quoteinfo.quoteAuthor + "\n";
+      var imgcredittext = "Image Credits: " + photoinfo.copyright;
+      var potentialfulltweet = quoteandattrib + imgcredittext;
+
+      // if the quote, author, and image credit string is shorter than 140 characters, download the nasa image to the server, and what we'll tweet is the text (as Twitter text) and the image unmodified
+      if (potentialfulltweet.length < 140) {
+        //console.log("Less than 140: " + potentialfulltweet);
+        return downloadPhoto(photoinfo).then(function(filename) {
+          tweetMessage(filename,potentialfulltweet);
+        }).catch(function(error) {
+          console.log('downloadPhoto() error: ', error.message);
+        });
+      }
+
+      // if the string is longer than 140 characters, send the image to Cloudinary, put the text directly onto the image, download it to the server, and that is the photo we'll tweet
+      else {
+        console.log("More than 140: " + potentialfulltweet);
+
+/*        cloudinary.uploader.upload(idstring, function(result) { 
+          console.log(result) 
+        });*/
+
+        //tweetMessage(filename,imgcredittext);
+      }  
+
+
+    }).catch(function(getphotoerror) {
+      console.log('getPhotoInfoFromNasa() error: ', getphotoerror.message);
     });
-  }).catch(function(error) {
-    console.log('getPhotoFromNasa() error: ', error.message);
+
+
+  }).catch(function(quoteerror) {
+    console.log('getQuote() error: ', quoteerror.message);
   });
 }
 
