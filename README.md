@@ -1,14 +1,20 @@
-#happyspacebot
+# happyspacebot
 
 This bot uses AJAX to pull a photo from the NASA photo API and a quote from api.forismatic.com to tweet.
 
-## Installation
+## Setup
 
-TODO: Describe the installation process
+TODO: Describe the setup/config process
 
-## Usage
+### Request NASA API Key
 
-TODO: Write usage instructions
+Set up an account for your bot at api.nasa.gov
+
+Take the API key information generated for you and fill it in config.js
+
+## Deploy to Heroku
+
+TODO: Describe how to deploy to Heroku
 
 ## Credits
 
