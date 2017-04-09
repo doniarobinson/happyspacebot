@@ -4,15 +4,21 @@ This bot uses AJAX to pull a photo from the NASA photo API and a quote from api.
 
 ## Set Up Config File
 
-TODO: Describe the setup/config process
+Copy *config.js* to *config-private.js*
 
-### Set Up Accounts
+Set up accounts and API access, and fill in API keys in *config-private.js* file; when running locally, the bot will use the settings in the *config-private.js* file, but will not deploy this file in Git repos
 
-Set up accounts and API access, and fill in API keys in config.js file
+1. Request Twitter API Access
+    * Set up an account for your bot at dev.twitter.com
+    * Take the API key and token information generated for you and fill in consumer_key, consumer_secret, access_token, and access_token_secret
 
-1. Request NASA API Key
+2. Request NASA API Key
     * Set up an account for your bot at api.nasa.gov
-    * Take the API key information generated for you and fill in 'nasa_api_key'
+    * Take the API key information generated for you and fill in nasa_api_key
+
+## Run Locally
+
+TODO: Describe how to run locally
 
 ## Deploy to Heroku
 
@@ -30,7 +36,7 @@ https://github.com/dariusk/examplebot
 
 MIT License
 
-Copyright (c) 2016 Donia Robinson
+Copyright (c) 2016-2017 Donia Robinson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
