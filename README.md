@@ -2,15 +2,17 @@
 
 This bot uses AJAX to pull a photo from the NASA photo API and a quote from api.forismatic.com to tweet.
 
-## Setup
+## Set Up Config File
 
 TODO: Describe the setup/config process
 
-### Request NASA API Key
+### Set Up Accounts
 
-Set up an account for your bot at api.nasa.gov
+Set up accounts and API access, and fill in API keys in config.js file
 
-Take the API key information generated for you and fill it in config.js
+1. Request NASA API Key
+    * Set up an account for your bot at api.nasa.gov
+    * Take the API key information generated for you and fill in 'nasa_api_key'
 
 ## Deploy to Heroku
 
