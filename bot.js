@@ -93,7 +93,7 @@ var downloadPhoto = function(photoinfo) {
 
     // Set options for image_downloader
     var options = {
-      url: photoinfo.url,
+      url: photoinfo,
       dest: 'tmp',
       done: function(err, filename, image) {
         if (err) {
@@ -120,7 +120,7 @@ var getQuote = function(quoteinfo) {
       if (quoteresult) {
         resolve(quoteresult.body);
       } else {
-        reject(quoteresult.error);
+        reject(quoteerror);
       }
     });
   });
@@ -171,23 +171,27 @@ function bot() {
 
       // if the quote, author, and image credit string is shorter than 140 characters, download the nasa image to the server, and what we'll tweet is the text (as Twitter text) and the image unmodified
       if (potentialfulltweet.length < 140) {
-        //console.log("Less than 140: " + potentialfulltweet);
-        return downloadPhoto(photoinfo).then(function(filename) {
+        console.log("Less than 140: " + potentialfulltweet);
+        return downloadPhoto(photoinfo.url).then(function(filename) {
           tweetMessage(filename,potentialfulltweet);
         }).catch(function(error) {
-          console.log('downloadPhoto() error: ', error.message);
+          console.log('Less than 140 char - downloadPhoto() error: ', error.message);
         });
       }
 
       // if the string is longer than 140 characters, send the image to Cloudinary, put the text directly onto the image, download it to the server, and that is the photo we'll tweet
       else {
         console.log("More than 140: " + potentialfulltweet);
+        cloudinary.uploader.upload(photoinfo.url, function(result) { 
+          return downloadPhoto(result.url).then(function(filename) {
+            tweetMessage(filename,imgcredittext);
+          }).catch(function(error) {
+          console.log('More than 140 char - downloadPhoto() error: ', error.message);
+        });
+        }).catch(function(error) {
+          console.log('cloudinary error: ', error.message);
+        });
 
-/*        cloudinary.uploader.upload(idstring, function(result) { 
-          console.log(result) 
-        });*/
-
-        //tweetMessage(filename,imgcredittext);
       }  
 
 
