@@ -4,7 +4,7 @@ This bot uses AJAX to pull a photo from the NASA photo API and a quote from api.
 
 ## Set Up Config File
 
-Copy *config.js* to *config-private.js*
+Copy *config.js.example* to *config-private.js*
 
 Set up accounts and API access, and fill in API keys in *config-private.js* file; when running locally, the bot will use the settings in the *config-private.js* file, but will not deploy this file in Git repos
 

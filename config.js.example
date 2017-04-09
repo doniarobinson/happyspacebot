@@ -16,5 +16,9 @@ module.exports = {
   consumer_secret:      '',
   access_token:         '',
   access_token_secret:  '',
+  CLOUDINARY_URL:      '', 
+  cloud_name:            '',
+  api_key:                '',
+  api_secret:             '',
   nasa_api_key:          ''
 }
