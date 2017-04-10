@@ -10,7 +10,6 @@ var T = new Twit(config);
 
 var copyrighttext = "";
 
-//var cloudinary = require('cloudinary');
 var cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
@@ -116,6 +115,7 @@ var getQuote = function(quoteinfo) {
   var quoteurl = "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
 
   /*known issue - I'm guessing API must send back json response using single quotes in structure; thus, single quotes inside of the response text, like this:
+  
   Don't worry when you are not recognized, but strive to be worthy of recognition.
 
   cause a json error. I may look for a different quote API at some point.
@@ -183,7 +183,7 @@ function bot() {
       if (potentialfulltweet.length < 140) {
         console.log("Less than 140: " + potentialfulltweet + "\n" + photoinfo.url);
         return downloadPhoto(photoinfo.url).then(function(filename) {
-          tweetMessage(filename,potentialfulltweet);
+          //tweetMessage(filename,potentialfulltweet);
         }).catch(function(error) {
           console.log('Less than 140 char - downloadPhoto() error: ', error.message);
         });
@@ -193,7 +193,12 @@ function bot() {
       else {
         console.log("More than 140: " + potentialfulltweet + "\n" + photoinfo.url);
 
-        var textoption = "text:Merriweather_40:" + quoteandattrib;
+        var textoption0 = "text:Merriweather_40:" + quoteandattrib;
+
+        /* the standard comma interferes with Cloudinary's code, so it needs to be replaced in the quote text with %252C -- https://support.cloudinary.com/hc/en-us/community/posts/200788162-Using-special-characters-in-Text-overlaying-
+        */
+
+        var textoption = textoption0.replace(/,/g, '%252C');
 
           var eager_options = {
             width: 500,
@@ -204,11 +209,13 @@ function bot() {
             crop: "fit"
           };
 
-        cloudinary.uploader.upload(photoinfo.url, {tags : "NASA", eager: eager_options}, function(err, result) {
+        cloudinary.uploader
+        .upload(photoinfo.url, {tags : "NASA", eager: eager_options})
+        .then(function(result) {
 
-              return downloadPhoto(result.eager[0].url).then(function(filename) {
-                tweetMessage(filename,imgcredittext);
-              }).catch(function(error) {
+          return downloadPhoto(result.eager[0].url).then(function(filename) {
+            tweetMessage(filename,imgcredittext);
+          }).catch(function(error) {
           console.log('More than 140 char - downloadPhoto() error: ', error.message);
         });
         }).catch(function(error) {
