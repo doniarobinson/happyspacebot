@@ -167,7 +167,11 @@ function bot() {
     return getPhotoInfoFromNasa().then(function(photoinfo) {
 
       var quoteandattrib = quoteinfo.quoteText + " -" + quoteinfo.quoteAuthor + "\n";
-      var imgcredittext = "Image Credits: " + photoinfo.copyright;
+
+      var updatedcopyright = (typeof photoinfo.copyright == 'undefined') ? "Public Domain":photoinfo.copyright;
+
+      var imgcredittext = "Image Credits: " + updatedcopyright;
+
       var potentialfulltweet = quoteandattrib + imgcredittext;
 
       // if the quote, author, and image credit string is shorter than 140 characters, download the nasa image to the server, and what we'll tweet is the text (as Twitter text) and the image unmodified
