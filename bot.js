@@ -115,6 +115,11 @@ var getQuote = function(quoteinfo) {
 
   var quoteurl = "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
 
+  /*known issue - I'm guessing API must send back json response using single quotes in structure; thus, single quotes inside of the response text, like this:
+  Don't worry when you are not recognized, but strive to be worthy of recognition.
+
+  cause a json error. I may look for a different quote API at some point.
+  */
     request
     .get(quoteurl)
     .end(function(quoteerror, quoteresult) {
