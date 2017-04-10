@@ -176,7 +176,7 @@ function bot() {
 
       // if the quote, author, and image credit string is shorter than 140 characters, download the nasa image to the server, and what we'll tweet is the text (as Twitter text) and the image unmodified
       if (potentialfulltweet.length < 140) {
-        console.log("Less than 140: " + potentialfulltweet);
+        console.log("Less than 140: " + potentialfulltweet + "\n" + photoinfo.url);
         return downloadPhoto(photoinfo.url).then(function(filename) {
           tweetMessage(filename,potentialfulltweet);
         }).catch(function(error) {
@@ -186,7 +186,7 @@ function bot() {
 
       // if the string is longer than 140 characters, send the image to Cloudinary, put the text directly onto the image, download it to the server, and that is the photo we'll tweet
       else {
-        console.log("More than 140: " + potentialfulltweet);
+        console.log("More than 140: " + potentialfulltweet + "\n" + photoinfo.url);
 
         var textoption = "text:Merriweather_40:" + quoteandattrib;
 
