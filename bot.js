@@ -10,7 +10,8 @@ var T = new Twit(config);
 
 var copyrighttext = "";
 
-var cloudinary = require('cloudinary');
+//var cloudinary = require('cloudinary');
+var cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
         cloud_name: config.cloud_name,
@@ -182,17 +183,30 @@ function bot() {
       // if the string is longer than 140 characters, send the image to Cloudinary, put the text directly onto the image, download it to the server, and that is the photo we'll tweet
       else {
         console.log("More than 140: " + potentialfulltweet);
-        cloudinary.uploader.upload(photoinfo.url, function(result) { 
-          return downloadPhoto(result.url).then(function(filename) {
-            tweetMessage(filename,imgcredittext);
-          }).catch(function(error) {
+
+        var textoption = "text:Merriweather_40:" + quoteandattrib;
+
+          var eager_options = {
+            width: 500,
+            gravity: 'south_east', x: 8, y: 8,
+            color: "white",
+            overlay: textoption,
+            flags: "no_overflow",
+            crop: "fit"
+          };
+
+        cloudinary.uploader.upload(photoinfo.url, {tags : "NASA", eager: eager_options}, function(err, result) {
+
+              return downloadPhoto(result.eager[0].url).then(function(filename) {
+                tweetMessage(filename,imgcredittext);
+              }).catch(function(error) {
           console.log('More than 140 char - downloadPhoto() error: ', error.message);
         });
         }).catch(function(error) {
           console.log('cloudinary error: ', error.message);
         });
 
-      }  
+      }
 
 
     }).catch(function(getphotoerror) {
@@ -208,7 +222,7 @@ function bot() {
 // post immediately
 //bot();
 
-// post every 8 hours
+// post every 4 hours
 setInterval(function() {
   try {
     bot();
@@ -216,4 +230,4 @@ setInterval(function() {
   catch (e) {
     console.log(e);
   }
-}, 8*60*60*1000);
+}, 4*60*60*1000);
