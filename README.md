@@ -18,7 +18,7 @@ Set up accounts and API access, and fill in API keys in *config-private.js* file
 
 ## Run Locally
 
-Once all config variables have been set, type `node bot.js` to run the bot.  Keep in mind that out-of-the-box, the code runs indefinitely every 8 hours and does NOT tweet at time zero.  (This is to avoid spamming your followers every single time you restart the bot.)  If you want to tweet immediately, uncomment the second line of:
+Once all config variables have been set, type `node bot.js` to run the bot.  Keep in mind that out-of-the-box, the code runs indefinitely every 4 hours and does NOT tweet at time zero.  (This is to avoid spamming your followers every single time you restart the bot.)  If you want to tweet immediately, uncomment the second line of:
 ```
 // post immediately
 // bot();
