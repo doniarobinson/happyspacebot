@@ -236,7 +236,7 @@ function bot() {
 }
 
 // post immediately
-//bot();
+bot();
 
 // post every 4 hours
 setInterval(function() {
