@@ -183,7 +183,7 @@ function bot() {
       if (potentialfulltweet.length < 140) {
         console.log("Less than 140: " + potentialfulltweet + "\n" + photoinfo.url);
         return downloadPhoto(photoinfo.url).then(function(filename) {
-          //tweetMessage(filename,potentialfulltweet);
+          tweetMessage(filename,potentialfulltweet);
         }).catch(function(error) {
           console.log('Less than 140 char - downloadPhoto() error: ', error.message);
         });
