@@ -30,7 +30,13 @@ If the tweet is successful, you will see the message **Tweet was posted** in the
 
 ## Deploy to Heroku
 
-TODO: Describe how to deploy to Heroku
+1. Create an account at heroku.com or log in to existing account
+
+2. Select "Create New App" and either provide a name for it or let Heroku fill this in
+
+3. Deploy the bot code to Heroku using Heroku CLI, GitHub, or Dropbox. The necessary Procfile is already included in this repo. Ensure your config-private.js file gets pushed as well.
+
+4. Use "View Logs" to troubleshoot issues, then re-deploy code as needed; "Restart all dynos" is also a handy tool to use.
 
 ## Credits
 
