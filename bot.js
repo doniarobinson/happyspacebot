@@ -207,7 +207,7 @@ function bot() {
             overlay: textoption,
             flags: "no_overflow",
             crop: "fit",
-            border: { width: 10, color: 'black'}
+            border: { width: 6, color: 'black'}
           };
 
         cloudinary.uploader
