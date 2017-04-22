@@ -193,7 +193,7 @@ function bot() {
       else {
         console.log("More than 140: " + potentialfulltweet + "\n" + photoinfo.url);
 
-        var textoption0 = "text:Merriweather_40:" + quoteandattrib;
+        var textoption0 = "text:Merriweather_40_stroke:" + quoteandattrib;
 
         /* the standard comma interferes with Cloudinary's code, so it needs to be replaced in the quote text with %252C -- https://support.cloudinary.com/hc/en-us/community/posts/200788162-Using-special-characters-in-Text-overlaying-
         */
@@ -206,7 +206,8 @@ function bot() {
             color: "white",
             overlay: textoption,
             flags: "no_overflow",
-            crop: "fit"
+            crop: "fit",
+            border: { width: 10, color: 'black'}
           };
 
         cloudinary.uploader
@@ -236,7 +237,7 @@ function bot() {
 }
 
 // post immediately
-//bot();
+bot();
 
 // post every 4 hours
 setInterval(function() {
