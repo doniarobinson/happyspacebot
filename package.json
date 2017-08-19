@@ -2,6 +2,9 @@
   "name": "happyspacebot",
   "version": "0.0.1",
   "description": "A bot that tweets an image from NASA and a random inspirational quote",
+  "engines": {
+    "node": "6.11.1"
+  },
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js",
