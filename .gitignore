@@ -1,5 +1,8 @@
+bot-misc-notes/
+node_modules/
 tmp/*
 !tmp/.gitkeep 
-node_modules/
 config-private.js
 npm-debug.log
+bot.sublime-project
+bot.sublime-workspace
