@@ -25,13 +25,11 @@ cloudinary.config({
  * @return {String} portion of the date that contains YYYY-MM-DD
  */
 function getRandomDateString(year, month, day) {
-  var todaysdate = new Date();
-  var earliestdate = new Date(year, month, day);
 
   const millisecondsinday = 24 * 60 * 60 * 1000;
 
-  var todayseconds = todaysdate.getTime();
-  var earliestseconds = earliestdate.getTime();
+  var earliestseconds = new Date(year, month, day).getTime();
+  var todayseconds = Date.now();
 
   var elapseddays = (todayseconds - earliestseconds) / millisecondsinday;
 
@@ -47,7 +45,7 @@ function getRandomDateString(year, month, day) {
 
 
 /**
- * Generates a random date, within the known dates of the available photos on NASA's API, and requests the photo from that data
+ * Requests a photo from NASA's API
  * @method getPhotoInfoFromNasa
  */
 var getPhotoInfoFromNasa = function() {
@@ -171,8 +169,8 @@ function bot() {
       var potentialfulltweet = quoteandattrib + imgcredittext;
 
       // if the quote, author, and image credit string is shorter than 140 characters, download the nasa image to the server, and what we'll tweet is the text (as Twitter text) and the image unmodified
-      if (potentialfulltweet.length < 140) {
-        console.log("Less than 140: " + potentialfulltweet + "\n" + photoinfo.url);
+      if (potentialfulltweet.length <= 140) {
+        console.log("Less than or equal to 140: " + potentialfulltweet + "\n" + photoinfo.url);
         return downloadPhoto(photoinfo.url).then(function(filename) {
           tweetMessage(filename,potentialfulltweet);
         }).catch(function(error) {
