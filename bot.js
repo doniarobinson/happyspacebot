@@ -4,11 +4,9 @@ var config = require(configfile);
 
 var image_downloader = require('image-downloader');
 var request = require('superagent');
+
 var Twit = require('twit');
-
 var T = new Twit(config);
-
-var copyrighttext = "";
 
 var cloudinary = require('cloudinary').v2;
 
@@ -17,7 +15,6 @@ cloudinary.config({
         api_key: config.api_key,
         api_secret: config.api_secret
 });
-
 
 /**
  * Calculates a random date between today and the date passed in
@@ -68,12 +65,6 @@ var getPhotoInfoFromNasa = function() {
       .end(function(nasaerror, nasaresult) {
         // if result of http request to NASA returns no error
         if (nasaresult.error === false) {
-          if (nasaresult.body.copyright !== undefined) {
-            copyrighttext = nasaresult.body.copyright;
-          } else {
-            copyrighttext = "Public Domain";
-          }
-
           resolve(nasaresult.body);
         } else {
           reject(nasaresult.error);
@@ -237,9 +228,14 @@ function bot() {
 }
 
 // post immediately
-bot();
+try {
+  bot();
+}
+catch (e) {
+  console.log(e);
+}
 
-// post every 4 hours
+// then post every 4 hours
 setInterval(function() {
   try {
     bot();
