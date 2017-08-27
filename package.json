@@ -10,11 +10,11 @@
     "start": "node bot.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Donia Robinson <donia@goldstarwebs.com>",
+  "author": "Donia Robinson <doniamae@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/goldstarwebs/happyspacebot.git"
+    "url": "https://github.com/doniarobinson/happyspacebot"
   },
   "keywords": [
     "twitter",
