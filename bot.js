@@ -225,20 +225,19 @@ function bot() {
   });
 }
 
-// post immediately
-try {
-  bot();
-}
-catch (e) {
-  console.log(e);
-}
-
-// then post every 4 hours
-setInterval(function() {
+function main() {
   try {
     bot();
   }
   catch (e) {
     console.log(e);
-  }
+  }  
+}
+
+// post immediately
+main();
+
+// then post every 4 hours
+setInterval(function() {
+  main();
 }, 4*60*60*1000);
