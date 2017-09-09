@@ -2,6 +2,8 @@
 var configfile = (process.env.consumer_key === undefined) ? './config-private.js' : './config.js';
 var config = require(configfile);
 
+var database = require("./database.json");
+
 var image_downloader = require('image-downloader');
 var request = require('superagent');
 
@@ -97,27 +99,42 @@ var downloadPhoto = function(photoinfo) {
   });
 }
 
-
 var getQuote = function(quoteinfo) {
   return new Promise(function(resolve, reject) {
 
-  var quoteurl = "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
+    var currentTime = new Date().getHours();
 
-  /*known issue - I'm guessing API must send back json response using single quotes in structure; thus, single quotes inside of the response text, like this:
-  
-  Don't worry when you are not recognized, but strive to be worthy of recognition.
+    // tweet quotes from women between midnight and 6pm
+    if (currentTime < 18) {
+      var randomindex = Math.floor((Math.random() * database.length));
+      var quoteresult = database[randomindex]; 
 
-  cause a json error. I may look for a different quote API at some point.
-  */
-    request
-    .get(quoteurl)
-    .end(function(quoteerror, quoteresult) {
       if (quoteresult) {
-        resolve(quoteresult.body);
+        resolve(quoteresult);
       } else {
-        reject(quoteerror);
+        reject(Error('Could not retrieve quote from JSON file'));
       }
-    });
+    }
+
+    else {
+      var quoteurl = "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
+
+      /*known issue - I'm guessing API must send back json response using single quotes in structure; thus, single quotes inside of the response text, like this:
+      
+      Don't worry when you are not recognized, but strive to be worthy of recognition.
+
+      cause a json error. I may look for a different quote API at some point.
+      */
+        request
+        .get(quoteurl)
+        .end(function(quoteerror, quoteresult) {
+          if (quoteresult) {
+            resolve(quoteresult.body);
+          } else {
+            reject(quoteerror);
+          }
+        });
+      }
   });
 }
 
@@ -235,6 +252,7 @@ function main() {
 }
 
 // post immediately
+
 main();
 
 // then post every 4 hours
