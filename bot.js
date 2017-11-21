@@ -255,7 +255,7 @@ function main() {
 
 main();
 
-// then post every 4 hours
+// then post every 8 hours
 setInterval(function() {
   main();
-}, 4*60*60*1000);
+}, 8*60*60*1000);
