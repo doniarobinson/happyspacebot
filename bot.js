@@ -13,9 +13,9 @@ var T = new Twit(config);
 var cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
-        cloud_name: config.cloud_name,
-        api_key: config.api_key,
-        api_secret: config.api_secret
+  cloud_name: config.cloud_name,
+  api_key: config.api_key,
+  api_secret: config.api_secret
 });
 
 /**
@@ -45,7 +45,6 @@ function getRandomDateString(year, month, day) {
   return datestringarray[0];
 }
 
-
 /**
  * Requests a photo from NASA's API
  * @method getPhotoInfoFromNasa
@@ -72,7 +71,6 @@ var getPhotoInfoFromNasa = function() {
       });
   })
 }
-
 
 /**
  * Downloads the photo to the server
@@ -104,19 +102,17 @@ var getQuote = function(quoteinfo) {
 
     var currentTime = new Date().getHours();
 
-    // tweet quotes from women between midnight and 6pm
-    if (currentTime < 18) {
+    // tweet quotes from women between midnight and 8am
+    if (currentTime < 8) {
       var randomindex = Math.floor((Math.random() * database.length));
-      var quoteresult = database[randomindex]; 
+      var quoteresult = database[randomindex];
 
       if (quoteresult) {
         resolve(quoteresult);
       } else {
         reject(Error('Could not retrieve quote from JSON file'));
       }
-    }
-
-    else {
+    } else {
       var quoteurl = "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
 
       /*known issue - I'm guessing API must send back json response using single quotes in structure; thus, single quotes inside of the response text, like this:
@@ -125,7 +121,7 @@ var getQuote = function(quoteinfo) {
 
       cause a json error. I may look for a different quote API at some point.
       */
-        request
+      request
         .get(quoteurl)
         .end(function(quoteerror, quoteresult) {
           if (quoteresult) {
@@ -134,36 +130,33 @@ var getQuote = function(quoteinfo) {
             reject(quoteerror);
           }
         });
-      }
+    }
   });
 }
 
+function tweetMessage(filename, tweettext) {
 
-function tweetMessage(filename,tweettext) {
+  T.postMediaChunked({
+    file_path: filename
+  }, function(err, data, response) {
 
-    T.postMediaChunked({
-      file_path: filename
-    }, function(err, data, response) {
+    var idstring = data.media_id_string;
+    var params = {
+      status: tweettext,
+      media_ids: [idstring]
+    };
 
-        var idstring = data.media_id_string;
-        var params = {
-          status: tweettext,
-          media_ids: [idstring]
-        };
-
-        T.post('statuses/update', params, function(twittererror, tweet, twitterresponse) {
-          if (twitterresponse) {
-            if (twittererror) {
-              console.log('Twitter returned this error: ', twittererror);
-            }
-            else {
-              console.log('Tweet was posted');
-            }
-          }
-        });
+    T.post('statuses/update', params, function(twittererror, tweet, twitterresponse) {
+      if (twitterresponse) {
+        if (twittererror) {
+          console.log('Twitter returned this error: ', twittererror);
+        } else {
+          console.log('Tweet was posted');
+        }
+      }
     });
+  });
 }
-
 
 /**
  * Main function to try getting a quote, getting a photo URL from NASA, downloading that photo, and tweeting a message, gracefully handling errors when possible
@@ -177,65 +170,54 @@ function bot() {
     //try getting a photo URL
     return getPhotoInfoFromNasa().then(function(photoinfo) {
 
-      var quoteandattrib = quoteinfo.quoteText + " -" + quoteinfo.quoteAuthor + "\n";
+      var quoteandattrib = quoteinfo.quoteText + "\n-" + quoteinfo.quoteAuthor + "\n@happyspacebot\n";
 
-      var updatedcopyright = (typeof photoinfo.copyright == 'undefined') ? "Public Domain":photoinfo.copyright;
+      var updatedcopyright = (typeof photoinfo.copyright == 'undefined') ? "Public Domain" : photoinfo.copyright;
 
       var imgcredittext = "Image Credits: " + updatedcopyright;
 
       var potentialfulltweet = quoteandattrib + imgcredittext;
 
-      // if the quote, author, and image credit string is shorter than 140 characters, download the nasa image to the server, and what we'll tweet is the text (as Twitter text) and the image unmodified
-      if (potentialfulltweet.length <= 140) {
-        console.log("Less than or equal to 140: " + potentialfulltweet + "\n" + photoinfo.url);
-        return downloadPhoto(photoinfo.url).then(function(filename) {
-          tweetMessage(filename,potentialfulltweet);
-        }).catch(function(error) {
-          console.log('Less than 140 char - downloadPhoto() error: ', error.message);
-        });
-      }
+      // send the image to Cloudinary, put the text directly onto the image, download it to the server, and that is the photo we'll tweet
+      console.log("Tweet: " + potentialfulltweet + "\n" + photoinfo.url);
 
-      // if the string is longer than 140 characters, send the image to Cloudinary, put the text directly onto the image, download it to the server, and that is the photo we'll tweet
-      else {
-        console.log("More than 140: " + potentialfulltweet + "\n" + photoinfo.url);
+      //var textoption0 = "text:Merriweather_40_stroke:" + quoteandattrib;
+      var textoption0 = "text:Overlock_50_stroke:" + quoteandattrib;
 
-        var textoption0 = "text:Merriweather_40_stroke:" + quoteandattrib;
+      /* the standard comma interferes with Cloudinary's code, so it needs to be replaced in the quote text with %252C -- https://support.cloudinary.com/hc/en-us/community/posts/200788162-Using-special-characters-in-Text-overlaying-
+       */
 
-        /* the standard comma interferes with Cloudinary's code, so it needs to be replaced in the quote text with %252C -- https://support.cloudinary.com/hc/en-us/community/posts/200788162-Using-special-characters-in-Text-overlaying-
-        */
+      var textoption = textoption0.replace(/,/g, '%252C');
 
-        var textoption = textoption0.replace(/,/g, '%252C');
 
-          var eager_options = {
-            width: 500,
-            gravity: 'south_east', x: 8, y: 8,
-            color: "white",
-            overlay: textoption,
-            flags: "no_overflow",
-            crop: "fit",
-            border: { width: 6, color: 'black'}
-          };
+      var eager_options = {
+        width: 600,
+        gravity: 'south_east',
+        x: 8,
+        y: 8,
+        color: 'white',
+        overlay: textoption,
+        flags: 'no_overflow',
+        crop: 'fit',
+        border: '4px_solid_rgb:333333'
+      };
 
-        cloudinary.uploader
-        .upload(photoinfo.url, {tags : "NASA", eager: eager_options})
+      cloudinary.uploader
+        .upload(photoinfo.url, { tags: "NASA", eager: eager_options })
         .then(function(result) {
 
           return downloadPhoto(result.eager[0].url).then(function(filename) {
-            tweetMessage(filename,imgcredittext);
+            tweetMessage(filename, imgcredittext);
           }).catch(function(error) {
-          console.log('More than 140 char - downloadPhoto() error: ', error.message);
-        });
+            console.log('More than 140 char - downloadPhoto() error: ', error.message);
+          });
         }).catch(function(error) {
           console.log('cloudinary error: ', error.message);
         });
 
-      }
-
-
     }).catch(function(getphotoerror) {
       console.log('getPhotoInfoFromNasa() error: ', getphotoerror.message);
     });
-
 
   }).catch(function(quoteerror) {
     console.log('getQuote() error: ', quoteerror.message);
@@ -245,10 +227,9 @@ function bot() {
 function main() {
   try {
     bot();
-  }
-  catch (e) {
+  } catch (e) {
     console.log(e);
-  }  
+  }
 }
 
 // post immediately
@@ -258,4 +239,4 @@ main();
 // then post every 8 hours
 setInterval(function() {
   main();
-}, 8*60*60*1000);
+}, 8 * 60 * 60 * 1000);
