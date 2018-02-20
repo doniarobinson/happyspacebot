@@ -187,7 +187,8 @@ function bot() {
       /* the standard comma interferes with Cloudinary's code, so it needs to be replaced in the quote text with %252C -- https://support.cloudinary.com/hc/en-us/community/posts/200788162-Using-special-characters-in-Text-overlaying-
        */
 
-      var textoption = textoption0.replace(/,/g, '%252C');
+      var textoption1 = textoption0.replace(/,/g, '%252C');
+      var textoption = textoption1.replace(/—/g, '-');
 
 
       var eager_options = {
